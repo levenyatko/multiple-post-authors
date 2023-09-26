@@ -1,75 +1,98 @@
 (function($) {
+    const AuthorsField = {
+        maxAuthorsCount: mpaJsVars.maxAuthors,
+        fieldsWrapper: null,
+        listSelector: '.mpa-post-authors-list',
+        init() {
+            if ( $("body").hasClass("post-php") ) {
+                this.fieldsWrapper = $('#mpauthors_metabox');
+            }
 
-    const max_authors_count = mpaJsVars.maxAuthors;
+            this.removeItemsInit();
+            this.showAvailableTools();
+        },
+        removeItemsInit() {
+            let selector = $( this.listSelector, this.fieldsWrapper);
+            let fieldObj = this;
+            if (selector.length > 0) {
+                selector.on("click", ".author-item-remove", function () {
+                    let el = $(this);
+                    if ( el.hasClass('disabled') ) {
+                        return;
+                    }
+                    el.parent().remove();
+                    fieldObj.showAvailableTools();
+                });
+            }
+        },
+        addItem($item) {
+            if ( !this.fieldsWrapper ) {
+                return;
+            }
 
-    let template = false;
+            let template = wp.template('post-authors-partial');
+            if ( !template ) {
+                return;
+            }
+
+            let html = template({
+                title: $item.text(),
+                value: $item.data('value')
+            });
+
+            $( this.listSelector, this.fieldsWrapper).append( html );
+        },
+        showAvailableTools() {
+            if ( null == this.fieldsWrapper ) {
+                return;
+            }
+
+            let authors_list = $( this.listSelector, this.fieldsWrapper),
+                authors_list_items = $('.mpa-post-authors-list__item', this.fieldsWrapper);
+
+            if ( authors_list.length ) {
+                authors_list.sortable();
+            }
+
+            // check possibility to remove item from list
+            if (authors_list_items.length > 1 ) {
+                authors_list_items.children('.author-item-remove.disabled').removeClass('disabled');
+            } else {
+                authors_list_items.children('.author-item-remove').addClass('disabled');
+            }
+
+            // check possibility to add new items to the list
+            if ( this.isMaxAuthorsAdded( authors_list_items.length ) ) {
+                authors_list.addClass('disabled');
+            } else {
+                authors_list.removeClass('disabled');
+            }
+        },
+        isMaxAuthorsAdded(count) {
+            if ( this.maxAuthorsCount > 0 && this.maxAuthorsCount <= count ) {
+                return true;
+            }
+            return false;
+        },
+        hideSearchResults() {
+            $(".mpa-search-results").hide();
+        },
+    };
 
     $(document).ready( function() {
 
-        if ( $(".mpa-post-authors-list").length ) {
-            $(".mpa-post-authors-list").sortable();
-        }
+        AuthorsField.init();
 
-        template = wp.template('post-authors-partial');
-
-        addAuthorsListItem();
-        removeAuthorFromList();
-
-        // only on the post edit page
-        if ( $("body").hasClass("post-php") ) {
-            show_available_tools($('.mpa-post-authors-list'));
-        }
-
-        // quick edit post mode function
-        if (typeof inlineEditPost !== 'undefined') {
-            let wp_inline_edit_function = inlineEditPost.edit;
-
-            inlineEditPost.edit = function( post_id ) {
-
-                wp_inline_edit_function.apply( this, arguments );
-
-                // get the post ID from the argument
-                var id = 0;
-                if ( typeof( post_id ) == 'object' ) { // if it is object, get the ID number
-                    id = parseInt( this.getId( post_id ) );
-                }
-
-                //if post id exists
-                if ( id > 0 ) {
-
-                    // fill the authors field values
-                    let specific_post_row = $( '#post-' + id ),
-                        specific_post_edit_row = $( '#edit-' + id ),
-                        authors_list_wrapper = $(".mpa-post-authors-list", specific_post_edit_row),
-                        post_authors = $( '.column-authors>.author_name', specific_post_row );
-
-                    authors_list_wrapper.html('');
-
-                    post_authors.each(function(){
-                        add_author_item_to_list($(this), authors_list_wrapper);
-                    });
-
-                    show_available_tools( authors_list_wrapper.parent() );
-
-                }
-            }
-        }
-
-    });
-
-    function addAuthorsListItem() {
-
-        $("#post-authors-search-field").on('input propertychange', function() {
-
+        $(".post-authors-search-field").on('input propertychange', function() {
             let $this = $(this),
                 ignored = [],
-                $results_box = $('.mpa-search-results');
+                $results_box = $this.parent().find('.mpa-search-results');
 
             if ( 2 > $this.val().length ) {
                 return;
             }
 
-            $(".mpa-post-authors-list>li>input").each(function(){
+            $( AuthorsField.listSelector + ">li>input").each(function(){
                 ignored.push($(this).val());
             });
 
@@ -92,7 +115,7 @@
                             $results_box.append('<p data-value="'+val.ID+'">'+val.display_name+'</p>');
                         });
                     } else {
-                        hide_search_results();
+                        AuthorsField.hideSearchResults();
                     }
                 },
                 error: function (e) {
@@ -104,84 +127,50 @@
 
         $(document).on('click', '.mpa-search-results>p', function(e){
 
-            let authors_wrap = $('.mpa-post-authors-list');
-
-            add_author_item_to_list($(this), $(".mpa-post-authors-list"));
-
-            show_available_tools(authors_wrap);
+            AuthorsField.addItem( $(this) );
+            AuthorsField.showAvailableTools();
 
             // clear up input field
-            $(".post-authors-search__field").val('');
+            $(".post-authors-search-field").val('');
         });
 
         $(document).on('click', function(e){
             if (e.target.class != 'mpa-search-results') {
-                hide_search_results();
+                AuthorsField.hideSearchResults();
             }
         });
 
-    }
+        // quick edit post mode function
+        if (typeof inlineEditPost !== 'undefined') {
+            let wp_inline_edit_function = inlineEditPost.edit;
 
-    function add_author_item_to_list($item, $parent ) {
+            inlineEditPost.edit = function( post_id ) {
+                wp_inline_edit_function.apply( this, arguments );
 
-        if ( !template ) {
-            return;
-        }
-
-        let html     = template({
-            title: $item.text(),
-            value: $item.data('value')
-        });
-
-        $parent.append( html );
-    }
-
-    function hide_search_results() {
-        $(".mpa-search-results").hide();
-    }
-
-    function show_available_tools( $wrap ) {
-
-        let authors_list_items = $wrap.find('.mpa-post-authors-list__item');
-
-        // check possibility to remove item from list
-        if (authors_list_items.length > 1 ) {
-            authors_list_items.children('.author-item-remove').removeClass('disabled');
-        } else {
-            authors_list_items.children('.author-item-remove').addClass('disabled');
-        }
-
-        // check possibility to add new items to the list
-        if ( is_max_authors_count( authors_list_items.length ) ) {
-            $wrap.addClass('disabled');
-        } else {
-            $wrap.removeClass('disabled');
-        }
-
-    }
-
-    function removeAuthorFromList() {
-        let selector = $(".mpa-post-authors-list");
-
-        if (selector.length > 0) {
-            selector.on("click", ".author-item-remove", function () {
-                let el = $(this);
-                if ( el.hasClass('disabled') ) {
-                    return;
+                // get the post ID from the argument
+                if ( typeof( post_id ) == 'object' ) { // if it is object, get the ID number
+                    post_id = parseInt( this.getId( post_id ) );
                 }
 
-                let items_list_wrapper = el.closest(".mpa-post-authors-list");
-                el.parent().remove();
-                show_available_tools(items_list_wrapper);
-            });
-        }
-    }
+                if ( post_id > 0 ) {
+                    // fill the authors field values
+                    let specific_post_row = $( '#post-' + post_id ),
+                        specific_post_edit_row = $( '#edit-' + post_id ),
+                        authors_list_wrapper = $(AuthorsField.listSelector, specific_post_edit_row),
+                        post_authors = $( '.column-mpa_authors .author_name', specific_post_row );
 
-    function is_max_authors_count(count) {
-        if ( max_authors_count > 0 && max_authors_count <= count ) {
-            return true;
+                    AuthorsField.fieldsWrapper = authors_list_wrapper.parent();
+
+                    authors_list_wrapper.html('');
+                    post_authors.each(function(){
+                        AuthorsField.addItem( $(this) );
+                    });
+
+                    AuthorsField.showAvailableTools();
+                }
+            }
         }
-        return false;
-    }
+
+    });
 
 })(jQuery);

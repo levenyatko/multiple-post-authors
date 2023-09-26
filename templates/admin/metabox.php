@@ -25,7 +25,7 @@
 			autocorrect="off"
 			autocapitalize="none"
 			spellcheck="false"
-			id="post-authors-search-field"
+			class="post-authors-search-field"
 			placeholder="<?php esc_attr_e( 'Search for an author', 'multi-post-authors' ); ?>"
 	>
 	<div class="mpa-search-results"></div>

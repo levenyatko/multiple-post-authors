@@ -97,7 +97,7 @@ class Authors_Metabox implements Metabox_Interface, Actions_Interface {
 
 			wp_enqueue_style( 'mpa-admin-styles', MPA_PLUGIN_URL . 'assets/admin/css/styles.css', [], '1.0' );
 
-			wp_register_script( 'mpa-admin-script', MPA_PLUGIN_URL . 'assets/admin/js/authors-field.js', [ 'jquery', 'jquery-ui-core' ], '1.0', true );
+			wp_register_script( 'mpa-admin-script', MPA_PLUGIN_URL . 'assets/admin/js/authors-field.js', [ 'jquery', 'jquery-ui-sortable', 'wp-util' ], '1.0', true );
 			wp_localize_script( 'mpa-admin-script', 'mpaJsVars', $vars );
 			wp_enqueue_script( 'mpa-admin-script' );
 		}

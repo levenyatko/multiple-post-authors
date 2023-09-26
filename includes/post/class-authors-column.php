@@ -45,6 +45,8 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 			}
 		}
 
+		$actions['quick_edit_custom_box'] = [ 'quickedit_fields', 10, 2 ];
+
 		return $actions;
 	}
 
@@ -115,6 +117,34 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 			$html = implode( '<br>', $authors_str );
 
 			echo wp_kses_post( $html );
+		}
+	}
+
+	/**
+	 * @param string $column_name Current column name.
+	 * @param string $post_type Current post type.
+	 *
+	 * @return void
+	 */
+	public function quickedit_fields( $column_name, $post_type ) {
+		if ( ! in_array( $post_type, $this->screens, true ) ) {
+			return;
+		}
+
+		if ( $column_name === $this->column_name ) {
+
+			$args = [
+				'authors' => [],
+			];
+
+			?>
+			<fieldset class="inline-edit-col-left mpa-quickedit-field-wrap">
+                <span class="inline-edit-categories-label">
+                    <?php esc_html_e( 'Authors', 'multi-post-authors' ); ?>
+                </span>
+                <?php Utils::load_template( 'metabox.php', 'admin', $args ); ?>
+			</fieldset>
+			<?php
 		}
 	}
 }

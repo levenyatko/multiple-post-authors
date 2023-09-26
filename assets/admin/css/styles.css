@@ -7,6 +7,10 @@
     border-radius: 5px;
 }
 
+.mpa-quickedit-field-wrap .mpa-post-authors-list__item {
+    border: 1px solid #8c8f94;
+}
+
 .mpa-post-authors-list__item .author-item-remove{
     color: #b32d2e;
 }
@@ -28,7 +32,7 @@
     display: none;
 }
 
-#post-authors-search-field {
+.post-authors-search-field {
     width: 100%;
 }
 
@@ -55,4 +59,9 @@
 .mpa-search-results p:active {
     cursor: pointer;
     background: #f1f1f1;
+}
+
+#authordiv,
+.inline-edit-author {
+    display: none !important;
 }

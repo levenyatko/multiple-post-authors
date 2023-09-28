@@ -139,10 +139,10 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 
 			?>
 			<fieldset class="inline-edit-col-left mpa-quickedit-field-wrap">
-                <span class="inline-edit-categories-label">
-                    <?php esc_html_e( 'Authors', 'multi-post-authors' ); ?>
-                </span>
-                <?php Utils::load_template( 'metabox.php', 'admin', $args ); ?>
+				<span class="inline-edit-categories-label">
+					<?php esc_html_e( 'Authors', 'multi-post-authors' ); ?>
+				</span>
+				<?php Utils::load_template( 'metabox.php', 'admin', $args ); ?>
 			</fieldset>
 			<?php
 		}

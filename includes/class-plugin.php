@@ -13,6 +13,7 @@ use Levenyatko\MultiplePostAuthors\Post\Authors_Metabox;
 use Levenyatko\MultiplePostAuthors\Post\Post_Meta;
 use Levenyatko\MultiplePostAuthors\Api\Api;
 use Levenyatko\MultiplePostAuthors\Adminpage\Settings_Page;
+use Levenyatko\MultiplePostAuthors\Query\Authors_Query;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -71,6 +72,9 @@ final class Plugin {
 		if ( is_admin() ) {
 			$this->admin_init();
 		}
+
+		$authors_query = new Authors_Query();
+		$this->hooks_manager->register( $authors_query );
 	}
 
 	/**

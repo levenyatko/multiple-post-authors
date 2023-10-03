@@ -17,10 +17,11 @@ interface Table_Column_Interface {
 	/**
 	 * Add column to the Posts table.
 	 *
-	 * @param array $columns Columns array.
+	 * @param array  $columns Columns array.
+	 * @param string $post_type Post Type.
 	 * @return array
 	 */
-	public function add( $columns );
+	public function add( $columns, $post_type );
 
 	/**
 	 * Display column data.

@@ -33,4 +33,5 @@ if ( ! defined( 'MPA_PLUGIN_DIR' ) ) {
 
 require_once __DIR__ . '/includes/class-plugin.php';
 
-new Levenyatko\MultiplePostAuthors\Plugin();
+global $mpa_plugin;
+$mpa_plugin = new Levenyatko\MultiplePostAuthors\Plugin();

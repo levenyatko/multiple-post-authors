@@ -3,10 +3,10 @@
  * Interface for a class that adds metabox to the admin panel
  *
  * @class   Metabox_Interface
- * @package Levenyatko\MultiplePostAuthors\Post\Interfaces
+ * @package Levenyatko\MultiplePostAuthors\Interfaces
  */
 
-namespace Levenyatko\MultiplePostAuthors\Post\Interfaces;
+namespace Levenyatko\MultiplePostAuthors\Interfaces;
 
 interface Metabox_Interface {
 

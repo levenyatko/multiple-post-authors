@@ -8,7 +8,7 @@
 
 namespace Levenyatko\MultiplePostAuthors;
 
-use Levenyatko\MultiplePostAuthors\Meta\Post_Authors;
+use Levenyatko\MultiplePostAuthors\Post\Post_Authors_Meta;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -63,6 +63,8 @@ class Utils {
 	 * @return mixed|null
 	 */
 	public static function get_post_authors( $post, $fields = [ 'ID', 'display_name', 'user_login' ] ) {
+		global $mpa_plugin;
+
 		if ( is_int( $post ) ) {
 			$post = get_post( $post );
 		}
@@ -75,7 +77,7 @@ class Utils {
 
 		if ( $post ) {
 
-			$authors_list = Post_Authors::get( $post->ID );
+			$authors_list = $mpa_plugin->meta['authors']->get( $post->ID );
 
 			if ( $authors_list ) {
 				$authors_include = [];

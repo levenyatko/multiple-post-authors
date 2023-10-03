@@ -9,7 +9,7 @@
 namespace Levenyatko\MultiplePostAuthors\Post;
 
 use Levenyatko\MultiplePostAuthors\Interfaces\Actions_Interface;
-use Levenyatko\MultiplePostAuthors\Post\Interfaces\Metabox_Interface;
+use Levenyatko\MultiplePostAuthors\Interfaces\Metabox_Interface;
 use Levenyatko\MultiplePostAuthors\Plugin;
 use Levenyatko\MultiplePostAuthors\Utils;
 
@@ -65,7 +65,7 @@ class Authors_Metabox implements Metabox_Interface, Actions_Interface {
 		$args    = [
 			'authors' => $authors,
 		];
-		Utils::load_template( 'metabox.php', 'admin', $args );
+		Utils::load_template( 'authors-list-metabox.php', 'admin', $args );
 	}
 
 	/**
@@ -74,18 +74,14 @@ class Authors_Metabox implements Metabox_Interface, Actions_Interface {
 	 * @return void
 	 */
 	public function enqueue_scripts( $hook ) {
-		global $post;
-
-		if ( empty( $post ) ) {
-			return;
-		}
+		global $post_type;
 
 		$supported_hooks = [ 'edit.php', 'post-new.php', 'post.php' ];
 		$screens         = $this->get_screens();
 
 		if ( in_array( $hook, $supported_hooks, true ) ) {
 
-			if ( ! in_array( $post->post_type, $screens, true ) ) {
+			if ( ! in_array( $post_type, $screens, true ) ) {
 				return;
 			}
 

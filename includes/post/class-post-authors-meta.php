@@ -1,24 +1,24 @@
 <?php
 /**
- * Class saved custom authors field value
+ * Class to retrieve the authors meta field value
  *
- * @class   Post_Meta
+ * @class   Post_Authors_Meta
  * @package Levenyatko\MultiplePostAuthors\Post
  */
 
 namespace Levenyatko\MultiplePostAuthors\Post;
 
+use Levenyatko\MultiplePostAuthors\Abstracts\Abstract_Post_Meta;
 use Levenyatko\MultiplePostAuthors\Interfaces\Actions_Interface;
-use Levenyatko\MultiplePostAuthors\Meta\Post_Authors;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Post_Meta implements Actions_Interface {
+class Post_Authors_Meta extends Abstract_Post_Meta implements Actions_Interface {
 
-	/** @var array $screens Post types to show Metabox. */
-	private $screens;
+	/** @var string $meta_key Meta key to save and get post data. */
+	public $meta_key = 'mpa_authors_list';
 
 	/**
 	 * @param array $screens Screens list where meta box is displayed.
@@ -32,14 +32,7 @@ class Post_Meta implements Actions_Interface {
 	 */
 	public function get_actions() {
 
-		$actions = [];
-
-		if ( ! empty( $this->screens ) ) {
-			foreach ( $this->screens as $screen ) {
-				$actions[ "save_post_{$screen}" ] = [ 'save', 50 ];
-			}
-		}
-
+		$actions                        = $this->get_save_actions();
 		$actions['wp_insert_post_data'] = [ 'add_default', 50, 2 ];
 
 		return $actions;
@@ -78,7 +71,7 @@ class Post_Meta implements Actions_Interface {
 				$value[] = $el;
 			}
 
-			Post_Authors::update( $post_id, $value );
+			$this->update( $post_id, $value );
 		}
 	}
 

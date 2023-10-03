@@ -8,6 +8,7 @@
 
 namespace Levenyatko\MultiplePostAuthors\Adminpage;
 
+use Levenyatko\MultiplePostAuthors\Abstracts\Abstract_Admin_Page;
 use Levenyatko\MultiplePostAuthors\Utils;
 
 class Settings_Page extends Abstract_Admin_Page {
@@ -16,7 +17,7 @@ class Settings_Page extends Abstract_Admin_Page {
 	 * @return string
 	 */
 	protected function get_menu_title() {
-		return __( 'Multiple Authors', 'multi-post-authors' );
+		return __( 'Settings', 'multi-post-authors' );
 	}
 
 	/**

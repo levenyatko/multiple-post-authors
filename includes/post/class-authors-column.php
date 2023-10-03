@@ -38,9 +38,10 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 
 		$actions = [];
 
+		$actions['manage_posts_columns'] = [ 'add', 50, 2 ];
+
 		if ( ! empty( $this->screens ) ) {
 			foreach ( $this->screens as $screen ) {
-				$actions[ "manage_{$screen}_posts_columns" ]       = [ 'add', 50 ];
 				$actions[ "manage_{$screen}_posts_custom_column" ] = [ 'display', 30, 2 ];
 			}
 		}
@@ -51,11 +52,16 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 	}
 
 	/**
-	 * @param array $columns Columns array.
+	 * @param array  $columns Columns array.
+	 * @param string $post_type Current post type.
 	 *
 	 * @return array
 	 */
-	public function add( $columns ) {
+	public function add( $columns, $post_type ) {
+		if ( ! in_array( $post_type, $this->screens, true ) ) {
+			return $columns;
+		}
+
 		$new_columns = [];
 
 		foreach ( $columns as $key => $value ) {
@@ -142,7 +148,7 @@ class Authors_Column implements Table_Column_Interface, Actions_Interface {
 				<span class="inline-edit-categories-label">
 					<?php esc_html_e( 'Authors', 'multi-post-authors' ); ?>
 				</span>
-				<?php Utils::load_template( 'metabox.php', 'admin', $args ); ?>
+				<?php Utils::load_template( 'authors-list-metabox.php', 'admin', $args ); ?>
 			</fieldset>
 			<?php
 		}

@@ -9,7 +9,7 @@
 namespace Levenyatko\MultiplePostAuthors\Query;
 
 use Levenyatko\MultiplePostAuthors\Interfaces\Filters_Interface;
-use Levenyatko\MultiplePostAuthors\Meta\Post_Authors;
+use Levenyatko\MultiplePostAuthors\Post\Post_Authors_Meta;
 
 class Authors_Query implements Filters_Interface {
 
@@ -33,7 +33,7 @@ class Authors_Query implements Filters_Interface {
 	 * @return string
 	 */
 	public function where( $where, $query ) {
-		global $wpdb;
+		global $wpdb, $mpa_plugin;
 
 		$fields = self::get_data_keys( $query );
 
@@ -41,7 +41,7 @@ class Authors_Query implements Filters_Interface {
 			return $where;
 		}
 
-		$authors_metakey = Post_Authors::AUTHORS_LIST;
+		$authors_metakey = $mpa_plugin->meta['authors']->meta_key;
 
 		$author_id   = (int) $query->get( $fields['author_key'] );
 		$author_name = $wpdb->esc_like( $query->get( $fields['author_name_key'] ) );

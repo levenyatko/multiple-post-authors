@@ -3,10 +3,10 @@
  * Abstract class for admin settings page
  *
  * @class   Abstract_Admin_Page
- * @package Levenyatko\MultiplePostAuthors\Adminpage
+ * @package Levenyatko\MultiplePostAuthors\Abstracts
  */
 
-namespace Levenyatko\MultiplePostAuthors\Adminpage;
+namespace Levenyatko\MultiplePostAuthors\Abstracts;
 
 use Levenyatko\MultiplePostAuthors\Interfaces\Actions_Interface;
 use Levenyatko\MultiplePostAuthors\Adminpage\Sections\Section;
@@ -27,13 +27,18 @@ abstract class Abstract_Admin_Page implements Actions_Interface {
 	/** @var Field_Factory_Interface $field_factory Factory class to create fields */
 	protected $field_factory;
 
+	/** @var string $parent_page Parent page. */
+	protected $parent_page;
+
 	/**
 	 * @param Options_Interface       $options Class to get options value.
 	 * @param Field_Factory_Interface $field_factory Factory to create fields.
+	 * @param string                  $parent_page Parent page if exists.
 	 */
-	public function __construct( $options, $field_factory ) {
+	public function __construct( $options, $field_factory, $parent_page = '' ) {
 		$this->options       = $options;
 		$this->field_factory = $field_factory;
+		$this->parent_page   = $parent_page;
 	}
 
 	/**
@@ -56,7 +61,6 @@ abstract class Abstract_Admin_Page implements Actions_Interface {
 	 */
 	public function render() {
 		?>
-
 			<div class="wrap">
 				<form action="options.php" method="post">
 					<h1><?php echo esc_html( $this->get_page_title() ); ?></h1>
@@ -97,15 +101,27 @@ abstract class Abstract_Admin_Page implements Actions_Interface {
 	 * @return void
 	 */
 	public function add_page() {
-		add_menu_page(
-			$this->get_page_title(),
-			$this->get_menu_title(),
-			$this->get_capability(),
-			$this->get_slug(),
-			[ $this, 'render' ],
-			$this->get_icon_url(),
-			$this->get_position()
-		);
+		if ( empty( $this->parent_page ) ) {
+			add_menu_page(
+				$this->get_page_title(),
+				$this->get_menu_title(),
+				$this->get_capability(),
+				$this->get_slug(),
+				[ $this, 'render' ],
+				$this->get_icon_url(),
+				$this->get_position()
+			);
+		} else {
+			add_submenu_page(
+				$this->parent_page,
+				$this->get_page_title(),
+				$this->get_menu_title(),
+				$this->get_capability(),
+				$this->get_slug(),
+				[ $this, 'render' ],
+				$this->get_position()
+			);
+		}
 	}
 
 	/**
